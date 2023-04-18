@@ -30,22 +30,28 @@ app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/models'));
 app.use(express.json({limit: '50mb'}));
 
-// Variables
-var model = undefined;
-
+// Connect to MongoDB local database
 connectToDB().catch(err => console.error(err));
 async function connectToDB() {
     await mongoose.connect(mongoDBAddr);
 }
 
+// Global variable
+var model = undefined;
+
 async function loadModel() {
     console.log("Initializing model...")
     
+    // Comment this out if you don't have predownloaded model
     model = await mobilenet.load({
         version: 1,
         alpha: 1.0,
         modelUrl: "http://localhost:8080/model.json"
     });
+
+    // Uncomment the line below to use online model
+    // model = await mobilenet.load();
+
     console.log("Finished loading model.")
 
     const LogDB = new logModel({
